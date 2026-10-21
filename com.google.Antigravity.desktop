@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=Antigravity
+GenericName=Agentic AI IDE
+Comment=Antigravity - Next Generation Agentic Desktop Application & IDE
+Exec=antigravity %U
+Icon=com.google.Antigravity
+Type=Application
+StartupNotify=true
+StartupWMClass=Antigravity
+Categories=Development;IDE;TextEditor;
+MimeType=x-scheme-handler/antigravity;text/plain;inode/directory;
+Keywords=google;antigravity;ide;ai;agent;development;coding;
+Actions=NewWindow;
+
+[Desktop Action NewWindow]
+Name=New Window
+Exec=antigravity --new-window %U

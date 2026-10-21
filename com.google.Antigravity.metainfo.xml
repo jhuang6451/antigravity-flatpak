@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.google.Antigravity</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary</project_license>
+  <name>Antigravity</name>
+  <summary>Next-generation agentic desktop application and IDE by Google</summary>
+
+  <description>
+    <p>
+      Antigravity is Google's advanced agentic coding environment and IDE.
+      It combines deep code intelligence, agentic pair-programming workflows,
+      and seamless developer toolchain integration.
+    </p>
+    <p>Key features include:</p>
+    <ul>
+      <li>Autonomous agentic workflows for software engineering tasks</li>
+      <li>Integrated Language Server protocol and code intelligence</li>
+      <li>Chrome DevTools MCP integration for web and UI debugging</li>
+      <li>Deep system and workspace integration with Wayland and X11 support</li>
+      <li>Automated updates and seamless Flatpak sandboxing</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">com.google.Antigravity.desktop</launchable>
+
+  <url type="homepage">https://antigravity.google</url>
+  <url type="help">https://antigravity.google</url>
+  <url type="bugtracker">https://github.com/jhuang6451/antigravity-flatpak/issues</url>
+  <url type="vcs-browser">https://github.com/jhuang6451/antigravity-flatpak</url>
+
+  <developer id="com.google">
+    <name>Google</name>
+  </developer>
+
+  <categories>
+    <category>Development</category>
+    <category>IDE</category>
+  </categories>
+
+  <provides>
+    <binary>antigravity</binary>
+    <mediatype>x-scheme-handler/antigravity</mediatype>
+  </provides>
+
+  <releases>
+    <release version="2.24.0" date="2026-10-15">
+      <description>
+        <p>Upstream Antigravity IDE version 2.24.0.</p>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1"/>
+</component>

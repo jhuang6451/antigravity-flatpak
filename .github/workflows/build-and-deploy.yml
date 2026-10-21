@@ -1,0 +1,143 @@
+name: Build Flatpak & Deploy Repository
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'com.google.Antigravity.yaml'
+      - 'antigravity.sh'
+      - 'com.google.Antigravity.desktop'
+      - 'com.google.Antigravity.metainfo.xml'
+      - 'icons/**'
+      - '.github/workflows/build-and-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build Flatpak & Export Repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Application Version
+        id: get_version
+        run: |
+          VERSION=$(grep -oP 'antigravity-hub/\K[0-9.]+(?=-)' com.google.Antigravity.yaml | head -n 1)
+          if [ -z "$VERSION" ]; then
+            VERSION="latest"
+          fi
+          echo "APP_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "Building Antigravity version: ${VERSION}"
+
+      - name: Cache Flatpak Builder State
+        uses: actions/cache@v4
+        with:
+          path: |
+            .flatpak-builder
+          key: flatpak-builder-${{ runner.os }}-${{ hashFiles('com.google.Antigravity.yaml') }}
+          restore-keys: |
+            flatpak-builder-${{ runner.os }}-
+
+      - name: Cache OSTree Repository
+        uses: actions/cache@v4
+        with:
+          path: repo
+          key: ostree-repo-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            ostree-repo-${{ runner.os }}-
+
+      - name: Build Flatpak Package
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: com.google.Antigravity.yaml
+          bundle: com.google.Antigravity.flatpak
+          build-bundle: true
+          branch: stable
+          repo-dir: repo
+          cache: true
+          arch: x86_64
+
+      - name: Generate OSTree Static Deltas & Prune
+        run: |
+          docker run --rm -v $(pwd):/workspace -w /workspace ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08 flatpak build-update-repo --generate-static-deltas --prune repo
+
+      - name: Prepare GitHub Pages Deployment Directory
+        run: |
+          mkdir -p deploy/repo deploy/icons
+
+          # Copy OSTree repository
+          cp -a repo/* deploy/repo/
+
+          # Copy Web UI
+          cp -a web/* deploy/
+
+          # Copy application icons
+          cp -a icons/hicolor/512x512/apps/com.google.Antigravity.png deploy/icons/com.google.Antigravity.png
+          cp -a icons/hicolor/512x512/apps/com.google.Antigravity.png deploy/icons/512x512.png
+
+          # Copy flatpak repo and ref descriptors
+          cp antigravity.flatpakrepo deploy/antigravity.flatpakrepo
+          cp antigravity.flatpakref deploy/antigravity.flatpakref
+
+      - name: Deploy to GitHub Pages (gh-pages branch)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy
+          publish_branch: gh-pages
+          force_orphan: false
+          commit_message: "deploy: publish Flatpak repository for Antigravity v${{ env.APP_VERSION }}"
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ env.APP_VERSION }}"
+          name: "Antigravity IDE v${{ env.APP_VERSION }}"
+          draft: false
+          prerelease: false
+          files: |
+            com.google.Antigravity.flatpak
+            antigravity.flatpakref
+            antigravity.flatpakrepo
+          body: |
+            ## Antigravity IDE v${{ env.APP_VERSION }}
+
+            Google Antigravity IDE packaged as an automated Flatpak.
+
+            ### 🚀 安装方式 (Installation)
+
+            #### 方式 1：添加仓库一键安装（推荐，支持全自动后台增量更新）
+            ```bash
+            # 1. 添加软件源
+            flatpak remote-add --if-not-exists antigravity https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/antigravity.flatpakrepo
+
+            # 2. 安装 Antigravity
+            flatpak install -y antigravity com.google.Antigravity
+
+            # 3. 运行
+            flatpak run com.google.Antigravity
+            ```
+
+            #### 方式 2：使用 `.flatpakref` 单文件图形化安装
+            下载本 Release 中的 `antigravity.flatpakref`，双击或运行：
+            ```bash
+            flatpak install antigravity.flatpakref
+            ```
+
+            #### 方式 3：离线单文件 Bundle 安装
+            下载 `com.google.Antigravity.flatpak`，随后执行：
+            ```bash
+            flatpak install com.google.Antigravity.flatpak
+            ```
+
+            ---
+            *自动化构建与发布由 GitHub Actions 驱动。*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

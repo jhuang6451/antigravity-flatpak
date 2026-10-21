@@ -1,0 +1,111 @@
+app-id: com.google.Antigravity
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: '25.08'
+command: antigravity
+tags:
+  - proprietary
+separate-locales: false
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/gtk-doc
+  - '*.la'
+
+finish-args:
+  # Display & Windowing
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  # Networking
+  - --share=network
+  # Audio & Media
+  - --socket=pulseaudio
+  - --filesystem=xdg-run/pipewire-0
+  # Hardware & Acceleration
+  - --device=all
+  # Development & Debugging
+  - --allow=devel
+  - --socket=ssh-auth
+  - --filesystem=host
+  # Desktop Integration & Notifications
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.freedesktop.secrets
+  - --talk-name=org.kde.kwalletd5
+  - --talk-name=org.kde.kwalletd6
+  - --talk-name=org.freedesktop.Flatpak
+  - --talk-name=com.canonical.AppMenu.Registrar
+  - --talk-name=com.canonical.AppMenu.Registrar.*
+  - --system-talk-name=org.freedesktop.login1
+  # Environment
+  - --env=XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons
+  - --env=ELECTRON_TRASH=gio
+
+modules:
+  - name: antigravity
+    buildsystem: simple
+    build-commands:
+      # Install main application binary package
+      - mkdir -p /app/antigravity
+      - cp -a antigravity/* /app/antigravity/
+
+      # Ensure executable permissions on all binaries
+      - chmod +x /app/antigravity/antigravity
+      - chmod +x /app/antigravity/chrome-sandbox
+      - chmod +x /app/antigravity/chrome_crashpad_handler
+      - chmod +x /app/antigravity/resources/bin/*
+
+      # Fix webm_encoder ELF interpreter from Google GRTE path (/usr/grte/v5/lib64/ld-linux-x86-64.so.2)
+      # to standard Linux ld-linux loader (/lib64/ld-linux-x86-64.so.2)
+      - |
+        python3 -c '
+        path = "/app/antigravity/resources/bin/webm_encoder"
+        with open(path, "rb") as f:
+            data = f.read()
+        old = b"/usr/grte/v5/lib64/ld-linux-x86-64.so.2\0"
+        new = b"/lib64/ld-linux-x86-64.so.2\0" + b"\0" * (len(old) - len(b"/lib64/ld-linux-x86-64.so.2\0"))
+        if old in data:
+            with open(path, "wb") as f:
+                f.write(data.replace(old, new, 1))
+        '
+
+      # Install wrapper launcher script
+      - install -Dm755 antigravity.sh /app/bin/antigravity
+
+      # Install Desktop integration files
+      - install -Dm644 com.google.Antigravity.desktop /app/share/applications/com.google.Antigravity.desktop
+      - install -Dm644 com.google.Antigravity.metainfo.xml /app/share/metainfo/com.google.Antigravity.metainfo.xml
+
+      # Install Hicolor icons
+      - |
+        for size in 16 24 32 48 64 128 256 512; do
+          if [ -f "icons/hicolor/${size}x${size}/apps/com.google.Antigravity.png" ]; then
+            install -Dm644 "icons/hicolor/${size}x${size}/apps/com.google.Antigravity.png" \
+              "/app/share/icons/hicolor/${size}x${size}/apps/com.google.Antigravity.png"
+          fi
+        done
+
+    sources:
+      - type: archive
+        url: https://storage.googleapis.com/antigravity-public/antigravity-hub/2.24.0-5780333019398144/linux-x64/Antigravity.tar.gz
+        sha256: 8808bf580033c5d1365142e1e66ff37474f04a5fa0d9fc24b7c24c8216acdcc6
+        strip-components: 1
+        dest: antigravity
+        only-arches:
+          - x86_64
+
+      - type: file
+        path: antigravity.sh
+
+      - type: file
+        path: com.google.Antigravity.desktop
+
+      - type: file
+        path: com.google.Antigravity.metainfo.xml
+
+      - type: dir
+        path: icons
+        dest: icons
