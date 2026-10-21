@@ -118,9 +118,14 @@ jobs:
           cp -a icons/hicolor/512x512/apps/com.google.Antigravity.png deploy/icons/com.google.Antigravity.png
           cp -a icons/hicolor/512x512/apps/com.google.Antigravity.png deploy/icons/512x512.png
 
-          # Copy flatpak repo and ref descriptors
+          # Copy flatpak repo and ref descriptors (both root and repo/ subpath)
           cp antigravity.flatpakrepo deploy/antigravity.flatpakrepo
+          cp antigravity.flatpakrepo deploy/repo/antigravity.flatpakrepo
           cp antigravity.flatpakref deploy/antigravity.flatpakref
+          cp antigravity.flatpakref deploy/repo/antigravity.flatpakref
+
+          # Disable Jekyll on GitHub Pages (Critical: prevents 404 on special extensions and static files)
+          touch deploy/.nojekyll
 
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4
