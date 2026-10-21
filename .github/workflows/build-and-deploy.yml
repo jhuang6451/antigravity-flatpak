@@ -22,6 +22,11 @@ jobs:
   build:
     name: Build Flatpak & Export Repository
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
+      options: --privileged
+    outputs:
+      app_version: ${{ steps.get_version.outputs.app_version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,9 +36,9 @@ jobs:
         run: |
           VERSION=$(grep -oP 'antigravity-hub/\K[0-9.]+(?=-)' com.google.Antigravity.yaml | head -n 1)
           if [ -z "$VERSION" ]; then
-            VERSION="latest"
+            VERSION="2.24.0"
           fi
-          echo "APP_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "app_version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "Building Antigravity version: ${VERSION}"
 
       - name: Cache Flatpak Builder State
@@ -45,15 +50,7 @@ jobs:
           restore-keys: |
             flatpak-builder-${{ runner.os }}-
 
-      - name: Cache OSTree Repository
-        uses: actions/cache@v4
-        with:
-          path: repo
-          key: ostree-repo-${{ runner.os }}-${{ github.run_id }}
-          restore-keys: |
-            ostree-repo-${{ runner.os }}-
-
-      - name: Build Flatpak Package
+      - name: Build Flatpak Package & OSTree Repo
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           manifest-path: com.google.Antigravity.yaml
@@ -66,14 +63,53 @@ jobs:
 
       - name: Generate OSTree Static Deltas & Prune
         run: |
-          docker run --rm -v $(pwd):/workspace -w /workspace ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08 flatpak build-update-repo --generate-static-deltas --prune repo
+          flatpak build-update-repo --generate-static-deltas --prune repo
+          tar -czf ostree-repo.tar.gz -C repo .
+
+      - name: Upload Standalone Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: antigravity-bundle
+          path: com.google.Antigravity.flatpak
+          if-no-files-found: error
+
+      - name: Upload OSTree Repository Archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ostree-repo-archive
+          path: ostree-repo.tar.gz
+          if-no-files-found: error
+
+  deploy:
+    name: Deploy to GitHub Pages & Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    env:
+      APP_VERSION: ${{ needs.build.outputs.app_version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Standalone Bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: antigravity-bundle
+
+      - name: Download OSTree Repository Archive
+        uses: actions/download-artifact@v4
+        with:
+          name: ostree-repo-archive
 
       - name: Prepare GitHub Pages Deployment Directory
         run: |
           mkdir -p deploy/repo deploy/icons
 
-          # Copy OSTree repository
-          cp -a repo/* deploy/repo/
+          # Extract OSTree repository
+          tar -xzf ostree-repo.tar.gz -C deploy/repo/
 
           # Copy Web UI
           cp -a web/* deploy/
