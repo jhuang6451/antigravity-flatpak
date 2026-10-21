@@ -1,0 +1,10 @@
+[Flatpak Ref]
+Name=com.google.Antigravity
+Branch=stable
+Title=Antigravity
+Comment=Google Antigravity IDE - Agentic Desktop Application & IDE
+Icon=https://jhuang6451.github.io/antigravity-flatpak/icons/com.google.Antigravity.png
+Url=https://jhuang6451.github.io/antigravity-flatpak/repo
+IsRuntime=false
+SuggestRemoteName=antigravity
+gpg-verify=false
