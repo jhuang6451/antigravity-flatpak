@@ -1,4 +1,9 @@
-# Antigravity Flatpak
+# Antigravity Flatpak (WIP)
+
+> [!WARNING]
+> **Work in progress.** This repository is being reworked. The published build can lag behind upstream, the OSTree repository is not GPG-signed yet, and the sandbox permissions are broad. See [TODO.md](TODO.md) for the full list.
+>
+> **开发中。** 本仓库正在整改：线上版本可能落后于上游，软件源尚未 GPG 签名，沙箱权限较宽。完整问题清单见 [TODO.md](TODO.md)。
 
 <div align="center">
   <img src="icons/hicolor/128x128/apps/com.google.Antigravity.png" alt="Antigravity Logo" width="96" height="96" />
