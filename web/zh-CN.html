@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antigravity Flatpak</title>
+<meta name="description" content="Google Antigravity 的非官方 Flatpak 软件源,带 GPG 签名。一条命令安装,用 flatpak update 更新。">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" type="image/png" href="icons/com.google.Antigravity.png">
+<link rel="alternate" hreflang="en" href="https://jhuang6451.github.io/antigravity-flatpak/">
+<link rel="alternate" hreflang="zh-CN" href="https://jhuang6451.github.io/antigravity-flatpak/zh-CN.html">
+<link rel="alternate" hreflang="x-default" href="https://jhuang6451.github.io/antigravity-flatpak/">
+<link rel="stylesheet" href="style.css">
+<noscript><style>.tabs{display:none}.panel[hidden]{display:block}.panel-title{display:block!important;margin:16px 0 8px}</style></noscript>
+<style>.panel-title{display:none}</style>
+</head>
+<body>
+<a class="skip" href="#install">跳到正文</a>
+<header class="app-bar">
+  <div class="container">
+    <a class="brand" href="zh-CN.html"><img src="icons/com.google.Antigravity.png" alt="" width="32" height="32"><span>Antigravity Flatpak</span></a>
+    <nav class="bar-actions" aria-label="Site">
+      <a class="btn btn-text" href="index.html" hreflang="en" lang="en"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>English</a>
+      <a class="icon-btn" href="https://github.com/jhuang6451/antigravity-flatpak" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="container">
+    <div>
+      <p class="eyebrow">非官方打包</p>
+      <p class="eyebrow" data-version-wrap hidden style="margin-left:8px">最新版本 <span data-version></span></p>
+      <h1>Flatpak 版 Google Antigravity</h1>
+      <p class="lead">Google Antigravity 的非官方 Flatpak 软件源,带 GPG 签名。定时工作流会构建每个上游新版本,你用 flatpak update 更新即可。</p>
+      <div class="actions">
+        <a class="btn btn-filled" href="antigravity.flatpakref" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>下载 .flatpakref</a>
+        <a class="btn btn-outlined" href="#install">用命令安装</a>
+        <a class="btn btn-text" href="https://github.com/jhuang6451/antigravity-flatpak">在 GitHub 查看</a>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true"><img src="icons/com.google.Antigravity.png" alt="" width="160" height="160"></div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="container">
+    <h2>安装</h2>
+    <p class="section-lead">需要 Flatpak 和 Flathub 软件源,运行时由 Flathub 提供。</p>
+    <div data-tabs><div class="tabs" role="tablist"><button class="tab" role="tab" id="inst-repo-tab" aria-controls="inst-repo" aria-selected="true" type="button">软件源</button><button class="tab" role="tab" id="inst-ref-tab" aria-controls="inst-ref" aria-selected="false" type="button">.flatpakref 文件</button><button class="tab" role="tab" id="inst-bundle-tab" aria-controls="inst-bundle" aria-selected="false" type="button">离线安装包</button></div><div class="panel" role="tabpanel" id="inst-repo" aria-labelledby="inst-repo-tab"><h3 class="panel-title">软件源</h3><p>只需添加一次软件源,之后更新会和其他 Flatpak 应用一起到达。</p><div class="code"><pre><code id="c-repo">flatpak remote-add --if-not-exists antigravity https://jhuang6451.github.io/antigravity-flatpak/antigravity.flatpakrepo
+flatpak install antigravity com.google.Antigravity
+flatpak run com.google.Antigravity</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-repo" data-copied="已复制"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">复制</span></button></div></div><div class="panel" role="tabpanel" id="inst-ref" aria-labelledby="inst-ref-tab"><h3 class="panel-title">.flatpakref 文件</h3><p>下载文件后用 GNOME Software 或 KDE Discover 打开,也可以执行下面的命令。如果还没有 Flathub,它会一并添加,用来获取运行时。</p><div class="code"><pre><code id="c-ref">flatpak install antigravity.flatpakref</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-ref" data-copied="已复制"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">复制</span></button></div><a class="btn btn-filled" href="antigravity.flatpakref" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>下载 .flatpakref</a></div><div class="panel" role="tabpanel" id="inst-bundle" aria-labelledby="inst-bundle-tab"><h3 class="panel-title">离线安装包</h3><p>从最新发布页下载 com.google.Antigravity.flatpak。安装包不会收到更新。</p><div class="code"><pre><code id="c-bundle">flatpak install com.google.Antigravity.flatpak</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-bundle" data-copied="已复制"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">复制</span></button></div><a class="btn btn-outlined" href="https://github.com/jhuang6451/antigravity-flatpak/releases/latest">打开最新发布页</a></div></div>
+    <h3 style="margin-top:28px">更新</h3>
+    <p class="note" style="margin-top:0;margin-bottom:12px">执行这条命令,或者交给软件中心。</p>
+    <div class="code"><pre><code id="c-update">flatpak update com.google.Antigravity</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-update" data-copied="已复制"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">复制</span></button></div>
+  </div>
+</section>
+
+<section id="permissions">
+  <div class="container">
+    <h2>权限</h2>
+    <p class="section-lead">默认沙箱的范围较大。安装前请先了解这三点。</p>
+    <div class="cards">
+      <div class="card warn"><h3>整个家目录</h3><p>应用可以读写家目录里的所有内容,包括 ~/.ssh 和 ~/.gnupg。Antigravity 的智能体也可以。</p></div>
+      <div class="card warn"><h3>宿主机上的命令</h3><p>org.freedesktop.Flatpak 允许 flatpak-spawn --host,即在沙箱外执行任意命令。所以沙箱不是安全边界。</p></div>
+      <div class="card warn"><h3>SSH agent</h3><p>--socket=ssh-auth 让应用能使用 agent 里加载的所有密钥。</p></div>
+    </div>
+    <h3 style="margin:32px 0 12px">完整列表</h3>
+    <dl class="list"><div class="row"><dt class="k"><code>--socket=wayland</code><code>--socket=fallback-x11</code><code>--share=ipc</code></dt><dd class="v">显示。有 Wayland 用 Wayland,否则用 X11。ipc 用于 X11 共享内存。</dd></div><div class="row"><dt class="k"><code>--share=network</code></dt><dd class="v">访问模型 API、扩展市场、Git 远程仓库和更新检查。</dd></div><div class="row"><dt class="k"><code>--device=dri</code></dt><dd class="v">使用 GPU 做硬件加速。</dd></div><div class="row"><dt class="k"><code>--socket=pulseaudio</code><code>--filesystem=xdg-run/pipewire-0</code></dt><dd class="v">音频,以及用于屏幕捕获的 PipeWire。</dd></div><div class="row"><dt class="k"><code>--filesystem=home</code></dt><dd class="v">读写家目录,包括点文件。项目和工具都放在这里。</dd></div><div class="row"><dt class="k"><code>--socket=ssh-auth</code></dt><dd class="v">转发宿主机的 SSH agent,用于 SSH 方式的 Git 和远程开发。</dd></div><div class="row"><dt class="k"><code>--allow=devel</code></dt><dd class="v">允许 ptrace 和 perf,gdb、lldb、strace 等调试器需要它们。</dd></div><div class="row"><dt class="k"><code>--talk-name=org.freedesktop.Flatpak</code></dt><dd class="v">允许应用执行 flatpak-spawn --host,用来打开宿主机 shell 或调用宿主机上的工具。</dd></div><div class="row"><dt class="k"><code>--talk-name=org.freedesktop.Notifications</code></dt><dd class="v">桌面通知。</dd></div><div class="row"><dt class="k"><code>--talk-name=org.freedesktop.secrets</code><code>org.kde.kwalletd5</code><code>org.kde.kwalletd6</code></dt><dd class="v">把凭据存进 GNOME Keyring 或 KWallet。</dd></div><div class="row"><dt class="k"><code>--talk-name=com.canonical.AppMenu.Registrar</code></dt><dd class="v">在提供全局菜单的桌面上显示全局菜单栏。</dd></div><div class="row"><dt class="k"><code>--system-talk-name=org.freedesktop.login1</code></dt><dd class="v">Electron 的电源监控通过 logind 获取挂起、恢复和关机事件。</dd></div><div class="row"><dt class="k"><code>--env=XCURSOR_PATH</code><code>--env=ELECTRON_TRASH=gio</code></dt><dd class="v">找到宿主机的光标主题,并把删除的文件移到桌面回收站。</dd></div></dl>
+    <p class="note">执行 <code>flatpak info --show-permissions com.google.Antigravity</code> 可以查看你的系统上实际授予的权限。完整说明见 <a href="https://github.com/jhuang6451/antigravity-flatpak/blob/master/README.zh-CN.md#权限">README</a>。</p>
+  </div>
+</section>
+
+<section id="access">
+  <div class="container">
+    <h2>收紧或放宽权限</h2>
+    <p class="section-lead">用户覆盖优先于清单。在终端里执行下面的命令。</p>
+    <div data-tabs><div class="tabs" role="tablist"><button class="tab" role="tab" id="adj-tight-tab" aria-controls="adj-tight" aria-selected="true" type="button">收紧</button><button class="tab" role="tab" id="adj-widen-tab" aria-controls="adj-widen" aria-selected="false" type="button">放宽</button></div><div class="panel" role="tabpanel" id="adj-tight" aria-labelledby="adj-tight-tab"><h3 class="panel-title">收紧</h3><p>去掉 home 后,应用看不到 ~/.gitconfig、~/.ssh 和 ~/.local/bin 里的工具,需要的话再单独加回来。</p><div class="code"><pre><code id="c-tight"># 只开放一个项目目录,不开放整个 $HOME
+flatpak override --user --nofilesystem=home --filesystem=~/Projects com.google.Antigravity
+
+# 去掉宿主机命令执行
+flatpak override --user --no-talk-name=org.freedesktop.Flatpak com.google.Antigravity
+
+# 去掉 SSH agent
+flatpak override --user --nosocket=ssh-auth com.google.Antigravity
+
+# 撤销所有覆盖
+flatpak override --user --reset com.google.Antigravity</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-tight" data-copied="已复制"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">复制</span></button></div></div><div class="panel" role="tabpanel" id="adj-widen" aria-labelledby="adj-widen-tab"><h3 class="panel-title">放宽</h3><p>能访问 Docker 套接字就等于拥有宿主机的 root 权限。device=all 会暴露所有设备节点。</p><div class="code"><pre><code id="c-widen"># /dev/kvm,用于 QEMU 和 Android 模拟器
+flatpak override --user --device=kvm com.google.Antigravity
+
+# USB 和串口设备
+flatpak override --user --device=all com.google.Antigravity
+
+# 外接磁盘和其他顶层路径
+flatpak override --user --filesystem=/mnt --filesystem=/run/media --filesystem=/media com.google.Antigravity
+flatpak override --user --filesystem=/srv --filesystem=/opt com.google.Antigravity
+
+# Podman 和 Docker 套接字
+flatpak override --user --filesystem=xdg-run/podman com.google.Antigravity
+flatpak override --user --filesystem=/run/docker.sock com.google.Antigravity</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-widen" data-copied="已复制"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">复制</span></button></div></div></div>
+  </div>
+</section>
+
+<section id="limitations">
+  <div class="container">
+    <h2>已知限制</h2>
+    <p class="section-lead">默认权限下无法使用的功能,以及对应的处理办法。</p>
+    <ul class="limits"><li><strong>设备</strong><span>没有 /dev/kvm、USB 和串口。刷写硬件、通过 USB 使用 adb、硬件加速的模拟器,都无法在沙箱内运行。</span></li><li><strong>家目录以外的路径</strong><span>/mnt、/media、/run/media、/srv、/opt 和 /var/www 看不到。</span></li><li><strong>容器套接字</strong><span>Docker 和 Podman 的套接字看不到,授权后才能访问。</span></li><li><strong>Fedora Atomic 上写死的 /home 路径</strong><span>家目录是 /var/home/&lt;用户名&gt;,沙箱里没有 /home 符号链接,所以 /home/&lt;用户名&gt;/... 会失败。请改用 $HOME 或 ~。</span></li><li><strong>宿主机工具</strong><span>装在宿主机系统目录里的程序不在 PATH 中。装在家目录下的工具可以用。其他情况请用 flatpak-spawn --host。</span></li><li><strong>内置更新器</strong><span>在只读的应用目录中的表现尚未测试。请通过 Flatpak 更新,应用内的更新提示可以忽略。</span></li><li><strong>架构</strong><span>仅 x86_64,因为上游没有发布其他架构的 Linux 版本。</span></li><li><strong>上游不提供校验和</strong><span>CI 会记录自己下载的压缩包的 SHA256。这能把构建固定在那份文件上,但不能证明它和 Google 想发布的内容一致。</span></li></ul>
+  </div>
+</section>
+
+<section id="details">
+  <div class="container">
+    <h2>软件包信息</h2>
+    <dl class="list"><div class="row"><dt class="k">应用 ID</dt><dd class="v"><code>com.google.Antigravity</code></dd></div><div class="row"><dt class="k">分支</dt><dd class="v"><code>stable</code></dd></div><div class="row"><dt class="k">架构</dt><dd class="v">x86_64</dd></div><div class="row"><dt class="k">运行时</dt><dd class="v"><code>org.freedesktop.Platform//25.08</code>、<code>org.electronjs.Electron2.BaseApp//25.08</code></dd></div><div class="row"><dt class="k">软件源</dt><dd class="v"><code>https://jhuang6451.github.io/antigravity-flatpak/repo</code></dd></div><div class="row"><dt class="k">签名密钥</dt><dd class="v">AGY Flatpak Repo<br><code>67EC 8F65 529D BB99 F120 757B B3AF C4AE F302 7676</code></dd></div></dl>
+    <p class="note">请使用本站或发布页上的 .flatpakrepo 和 .flatpakref,它们带有公钥。git 仓库里的副本只是模板,不含公钥。</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container">
+    <p>非官方社区打包项目,与 Google 无关联,也未获得 Google 认可。Antigravity 是专有软件,也是 Google LLC 的商标。打包文件以 MIT 许可证发布。</p>
+    <p><a href="https://github.com/jhuang6451/antigravity-flatpak">GitHub</a> · <a href="https://github.com/jhuang6451/antigravity-flatpak/blob/master/README.zh-CN.md">README</a> · <a href="https://github.com/jhuang6451/antigravity-flatpak/releases">发布页</a></p>
+  </div>
+</footer>
+<script src="app.js" defer></script>
+</body>
+</html>

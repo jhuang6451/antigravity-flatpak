@@ -1,151 +1,130 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Antigravity Flatpak - Google Antigravity IDE 一键安装与自动化更新</title>
-  <meta name="description" content="Google Antigravity IDE 的生产级 Flatpak 打包，支持一键安装、自动更新与 Wayland 原生支持。">
-  <link rel="icon" type="image/png" href="icons/com.google.Antigravity.png">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antigravity Flatpak</title>
+<meta name="description" content="Unofficial, GPG-signed Flatpak repository for Google Antigravity. Install with one command and update with flatpak update.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" type="image/png" href="icons/com.google.Antigravity.png">
+<link rel="alternate" hreflang="en" href="https://jhuang6451.github.io/antigravity-flatpak/">
+<link rel="alternate" hreflang="zh-CN" href="https://jhuang6451.github.io/antigravity-flatpak/zh-CN.html">
+<link rel="alternate" hreflang="x-default" href="https://jhuang6451.github.io/antigravity-flatpak/">
+<link rel="stylesheet" href="style.css">
+<noscript><style>.tabs{display:none}.panel[hidden]{display:block}.panel-title{display:block!important;margin:16px 0 8px}</style></noscript>
+<style>.panel-title{display:none}</style>
 </head>
 <body>
-  <div class="bg-glow"></div>
-  <header class="header">
-    <div class="container nav-content">
-      <div class="logo-group">
-        <img src="icons/com.google.Antigravity.png" alt="Antigravity Logo" class="app-icon">
-        <span class="app-title">Antigravity Flatpak</span>
-      </div>
-      <div class="nav-links">
-        <a href="https://github.com/jhuang6451/antigravity-flatpak" target="_blank" rel="noopener" class="nav-btn">
-          <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-          GitHub 仓库
-        </a>
-      </div>
-    </div>
-  </header>
+<a class="skip" href="#install">Skip to content</a>
+<header class="app-bar">
+  <div class="container">
+    <a class="brand" href="index.html"><img src="icons/com.google.Antigravity.png" alt="" width="32" height="32"><span>Antigravity Flatpak</span></a>
+    <nav class="bar-actions" aria-label="Site">
+      <a class="btn btn-text" href="zh-CN.html" hreflang="zh-CN" lang="zh-CN"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>简体中文</a>
+      <a class="icon-btn" href="https://github.com/jhuang6451/antigravity-flatpak" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    </nav>
+  </div>
+</header>
 
-  <main class="container main-content">
-    <section class="hero">
-      <div class="badge">
-        <span class="badge-dot"></span>
-        生产级 Flatpak 仓库 · 实时自动同步上游更新
-      </div>
-      <h1 class="hero-title">
-        Google <span class="gradient-text">Antigravity IDE</span>
-      </h1>
-      <p class="hero-subtitle">
-        下一代智能体编程集成开发环境 (Agentic IDE)。基于 Flatpak 沙箱化打包，一键安装，无缝跨主流 Linux 发行版运行。
-      </p>
-
+<main id="main">
+<section class="hero">
+  <div class="container">
+    <div>
+      <p class="eyebrow">Unofficial package</p>
+      <p class="eyebrow" data-version-wrap hidden style="margin-left:8px">Latest release <span data-version></span></p>
+      <h1>Google Antigravity as a Flatpak</h1>
+      <p class="lead">An unofficial Flatpak repository for Google Antigravity, signed with GPG. A scheduled workflow builds each new upstream release, and you update with flatpak update.</p>
       <div class="actions">
-        <a href="antigravity.flatpakref" class="btn btn-primary" download>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          一键安装 (.flatpakref)
-        </a>
-        <a href="#cli-install" class="btn btn-secondary">
-          终端命令安装
-        </a>
+        <a class="btn btn-filled" href="antigravity.flatpakref" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>Download .flatpakref</a>
+        <a class="btn btn-outlined" href="#install">Install with commands</a>
+        <a class="btn btn-text" href="https://github.com/jhuang6451/antigravity-flatpak">View on GitHub</a>
       </div>
-    </section>
-
-    <section id="cli-install" class="install-section">
-      <h2 class="section-title">终端快速安装（推荐）</h2>
-      <p class="section-desc">只需添加一次仓库，即可享受 Flatpak 官方标准的软件包管理与全自动后台更新：</p>
-
-      <div class="code-box">
-        <div class="code-header">
-          <span>终端命令行安装</span>
-          <button class="copy-btn" onclick="copyCode('install-cmd')">复制命令</button>
-        </div>
-        <pre><code id="install-cmd"># 1. 添加 Antigravity 软件源
-flatpak remote-add --if-not-exists antigravity https://jhuang6451.github.io/antigravity-flatpak/antigravity.flatpakrepo
-
-# 2. 安装 Antigravity IDE
-flatpak install -y antigravity com.google.Antigravity
-
-# 3. 运行 Antigravity
-flatpak run com.google.Antigravity</code></pre>
-      </div>
-
-      <div class="code-box update-box">
-        <div class="code-header">
-          <span>日常更新命令</span>
-          <button class="copy-btn" onclick="copyCode('update-cmd')">复制命令</button>
-        </div>
-        <pre><code id="update-cmd"># 检查并更新到最新版本
-flatpak update com.google.Antigravity</code></pre>
-      </div>
-    </section>
-
-    <section class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🚀</div>
-        <h3>自动化持续集成更新</h3>
-        <p>GitHub Actions 每 6 小时监控 Google 官方分发端。检测到新版本后自动计算校验和、构建 OSTree 增量镜像并发布。</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🛡️</div>
-        <h3>安全沙箱与宿主互通</h3>
-        <p>基于 FreeDesktop 运行时沙箱保护，同时配置 <code>--filesystem=host</code> 与密钥环通道，无缝访问本地项目源码与环境。</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🎨</div>
-        <h3>Wayland 原生支持</h3>
-        <p>内置自适应 Wayland/X11 探测逻辑与高分屏优化，支持 <code>~/.config/antigravity-flags.conf</code> 自定义启动参数。</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3>增量 OSTree 极速下载</h3>
-        <p>仓库启用 Static Deltas 静态增量切片压缩技术，版本更新只需下载极小差异补丁，节省带宽与时间。</p>
-      </div>
-    </section>
-
-    <section class="meta-section">
-      <div class="meta-card">
-        <div class="meta-item">
-          <span class="meta-label">应用 ID</span>
-          <span class="meta-val">com.google.Antigravity</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">软件架构</span>
-          <span class="meta-val">x86_64</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">底层运行时</span>
-          <span class="meta-val">org.freedesktop.Platform 25.08</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">分发协议</span>
-          <span class="meta-val">OSTree / Flatpak Repo</span>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="container footer-content">
-      <p>Antigravity Flatpak 社区构建与自动打包项目 · 软件版权归 Google 所有</p>
-      <p>托管于 <a href="https://github.com/jhuang6451/antigravity-flatpak" target="_blank" rel="noopener">GitHub</a></p>
     </div>
-  </footer>
+    <div class="hero-art" aria-hidden="true"><img src="icons/com.google.Antigravity.png" alt="" width="160" height="160"></div>
+  </div>
+</section>
 
-  <script>
-    function copyCode(id) {
-      const code = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        const btn = event.target;
-        const oldText = btn.innerText;
-        btn.innerText = '已复制！';
-        btn.style.borderColor = '#34d399';
-        btn.style.color = '#34d399';
-        setTimeout(() => {
-          btn.innerText = oldText;
-          btn.style.borderColor = '';
-          btn.style.color = '';
-        }, 2000);
-      });
-    }
-  </script>
+<section id="install">
+  <div class="container">
+    <h2>Install</h2>
+    <p class="section-lead">You need Flatpak and the Flathub remote. Flathub provides the runtime.</p>
+    <div data-tabs><div class="tabs" role="tablist"><button class="tab" role="tab" id="inst-repo-tab" aria-controls="inst-repo" aria-selected="true" type="button">Repository</button><button class="tab" role="tab" id="inst-ref-tab" aria-controls="inst-ref" aria-selected="false" type="button">.flatpakref file</button><button class="tab" role="tab" id="inst-bundle-tab" aria-controls="inst-bundle" aria-selected="false" type="button">Offline bundle</button></div><div class="panel" role="tabpanel" id="inst-repo" aria-labelledby="inst-repo-tab"><h3 class="panel-title">Repository</h3><p>Adds the repository once. After that, updates arrive with the rest of your Flatpak apps.</p><div class="code"><pre><code id="c-repo">flatpak remote-add --if-not-exists antigravity https://jhuang6451.github.io/antigravity-flatpak/antigravity.flatpakrepo
+flatpak install antigravity com.google.Antigravity
+flatpak run com.google.Antigravity</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-repo" data-copied="Copied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">Copy</span></button></div></div><div class="panel" role="tabpanel" id="inst-ref" aria-labelledby="inst-ref-tab"><h3 class="panel-title">.flatpakref file</h3><p>Download the file and open it in GNOME Software or KDE Discover, or run the command below. It also adds Flathub for the runtime if you do not have it.</p><div class="code"><pre><code id="c-ref">flatpak install antigravity.flatpakref</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-ref" data-copied="Copied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">Copy</span></button></div><a class="btn btn-filled" href="antigravity.flatpakref" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>Download .flatpakref</a></div><div class="panel" role="tabpanel" id="inst-bundle" aria-labelledby="inst-bundle-tab"><h3 class="panel-title">Offline bundle</h3><p>Download com.google.Antigravity.flatpak from the latest release. A bundle does not receive updates.</p><div class="code"><pre><code id="c-bundle">flatpak install com.google.Antigravity.flatpak</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-bundle" data-copied="Copied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">Copy</span></button></div><a class="btn btn-outlined" href="https://github.com/jhuang6451/antigravity-flatpak/releases/latest">Open latest release</a></div></div>
+    <h3 style="margin-top:28px">Update</h3>
+    <p class="note" style="margin-top:0;margin-bottom:12px">Run this, or let your software center do it.</p>
+    <div class="code"><pre><code id="c-update">flatpak update com.google.Antigravity</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-update" data-copied="Copied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">Copy</span></button></div>
+  </div>
+</section>
+
+<section id="permissions">
+  <div class="container">
+    <h2>Permissions</h2>
+    <p class="section-lead">The default sandbox is wide. Three things to know before you install.</p>
+    <div class="cards">
+      <div class="card warn"><h3>Your whole home directory</h3><p>The app can read and write everything in your home folder, including ~/.ssh and ~/.gnupg. Antigravity's agents can do the same.</p></div>
+      <div class="card warn"><h3>Commands on your host</h3><p>org.freedesktop.Flatpak allows flatpak-spawn --host, which runs any command outside the sandbox. The sandbox is not a security boundary.</p></div>
+      <div class="card warn"><h3>Your SSH agent</h3><p>--socket=ssh-auth gives the app every key loaded in your agent.</p></div>
+    </div>
+    <h3 style="margin:32px 0 12px">Full list</h3>
+    <dl class="list"><div class="row"><dt class="k"><code>--socket=wayland</code><code>--socket=fallback-x11</code><code>--share=ipc</code></dt><dd class="v">Display. Wayland when available, X11 otherwise. ipc is needed for X11 shared memory.</dd></div><div class="row"><dt class="k"><code>--share=network</code></dt><dd class="v">Model APIs, the extension marketplace, Git remotes and update checks.</dd></div><div class="row"><dt class="k"><code>--device=dri</code></dt><dd class="v">GPU access for hardware acceleration.</dd></div><div class="row"><dt class="k"><code>--socket=pulseaudio</code><code>--filesystem=xdg-run/pipewire-0</code></dt><dd class="v">Audio, and PipeWire for screen capture.</dd></div><div class="row"><dt class="k"><code>--filesystem=home</code></dt><dd class="v">Read and write access to your home directory, including dotfiles. Projects and tools live there.</dd></div><div class="row"><dt class="k"><code>--socket=ssh-auth</code></dt><dd class="v">Forwards the host SSH agent for Git over SSH and remote development.</dd></div><div class="row"><dt class="k"><code>--allow=devel</code></dt><dd class="v">Allows ptrace and perf, which debuggers such as gdb, lldb and strace need.</dd></div><div class="row"><dt class="k"><code>--talk-name=org.freedesktop.Flatpak</code></dt><dd class="v">Lets the app run flatpak-spawn --host, for a host shell or host tools.</dd></div><div class="row"><dt class="k"><code>--talk-name=org.freedesktop.Notifications</code></dt><dd class="v">Desktop notifications.</dd></div><div class="row"><dt class="k"><code>--talk-name=org.freedesktop.secrets</code><code>org.kde.kwalletd5</code><code>org.kde.kwalletd6</code></dt><dd class="v">Stores credentials in GNOME Keyring or KWallet.</dd></div><div class="row"><dt class="k"><code>--talk-name=com.canonical.AppMenu.Registrar</code></dt><dd class="v">Global menu bar on desktops that provide one.</dd></div><div class="row"><dt class="k"><code>--system-talk-name=org.freedesktop.login1</code></dt><dd class="v">Electron's power monitor reads suspend, resume and shutdown events from logind.</dd></div><div class="row"><dt class="k"><code>--env=XCURSOR_PATH</code><code>--env=ELECTRON_TRASH=gio</code></dt><dd class="v">Finds the host cursor theme, and moves deleted files to the desktop trash.</dd></div></dl>
+    <p class="note">Use <code>flatpak info --show-permissions com.google.Antigravity</code> to see what is granted on your system. The <a href="https://github.com/jhuang6451/antigravity-flatpak#permissions">README</a> has the full explanation.</p>
+  </div>
+</section>
+
+<section id="access">
+  <div class="container">
+    <h2>Tighten or widen access</h2>
+    <p class="section-lead">User overrides take precedence over the manifest. Run these in a terminal.</p>
+    <div data-tabs><div class="tabs" role="tablist"><button class="tab" role="tab" id="adj-tight-tab" aria-controls="adj-tight" aria-selected="true" type="button">Tighten</button><button class="tab" role="tab" id="adj-widen-tab" aria-controls="adj-widen" aria-selected="false" type="button">Widen</button></div><div class="panel" role="tabpanel" id="adj-tight" aria-labelledby="adj-tight-tab"><h3 class="panel-title">Tighten</h3><p>With home removed, the app no longer sees ~/.gitconfig, ~/.ssh or tools in ~/.local/bin unless you add them back.</p><div class="code"><pre><code id="c-tight"># Only one project directory instead of all of $HOME
+flatpak override --user --nofilesystem=home --filesystem=~/Projects com.google.Antigravity
+
+# Drop host command execution
+flatpak override --user --no-talk-name=org.freedesktop.Flatpak com.google.Antigravity
+
+# Drop the SSH agent
+flatpak override --user --nosocket=ssh-auth com.google.Antigravity
+
+# Undo every override
+flatpak override --user --reset com.google.Antigravity</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-tight" data-copied="Copied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">Copy</span></button></div></div><div class="panel" role="tabpanel" id="adj-widen" aria-labelledby="adj-widen-tab"><h3 class="panel-title">Widen</h3><p>Docker socket access is equivalent to root on the host. The device=all line exposes every device node.</p><div class="code"><pre><code id="c-widen"># /dev/kvm for QEMU and the Android emulator
+flatpak override --user --device=kvm com.google.Antigravity
+
+# USB and serial devices
+flatpak override --user --device=all com.google.Antigravity
+
+# External disks and other top-level paths
+flatpak override --user --filesystem=/mnt --filesystem=/run/media --filesystem=/media com.google.Antigravity
+flatpak override --user --filesystem=/srv --filesystem=/opt com.google.Antigravity
+
+# Podman and Docker sockets
+flatpak override --user --filesystem=xdg-run/podman com.google.Antigravity
+flatpak override --user --filesystem=/run/docker.sock com.google.Antigravity</code></pre><button class="btn btn-tonal btn-small" type="button" data-copy="c-widen" data-copied="Copied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="copy-label">Copy</span></button></div></div></div>
+  </div>
+</section>
+
+<section id="limitations">
+  <div class="container">
+    <h2>Known limitations</h2>
+    <p class="section-lead">What does not work with the default permissions, and what to do about it.</p>
+    <ul class="limits"><li><strong>Devices</strong><span>No /dev/kvm, USB or serial ports. Hardware flashing, adb over USB and hardware-accelerated emulators fail inside the sandbox.</span></li><li><strong>Paths outside home</strong><span>/mnt, /media, /run/media, /srv, /opt and /var/www are not visible.</span></li><li><strong>Container sockets</strong><span>The Docker and Podman sockets are not visible until you grant access.</span></li><li><strong>Hardcoded /home paths on Fedora Atomic</strong><span>Your home is /var/home/&lt;user&gt;. The /home symlink does not exist inside the sandbox, so /home/&lt;user&gt;/... fails. Use $HOME or ~.</span></li><li><strong>Host tools</strong><span>Programs installed system-wide on the host are not on PATH. Tools under your home work. For the rest, use flatpak-spawn --host.</span></li><li><strong>Built-in updater</strong><span>Not tested inside the read-only app directory. Update through Flatpak and ignore in-app update prompts.</span></li><li><strong>Architecture</strong><span>x86_64 only, because upstream publishes no other Linux build.</span></li><li><strong>No upstream checksums</strong><span>CI records the SHA256 of the tarball it downloads. That pins the build to those bytes but does not prove they match what Google intended to publish.</span></li></ul>
+  </div>
+</section>
+
+<section id="details">
+  <div class="container">
+    <h2>Package details</h2>
+    <dl class="list"><div class="row"><dt class="k">App ID</dt><dd class="v"><code>com.google.Antigravity</code></dd></div><div class="row"><dt class="k">Branch</dt><dd class="v"><code>stable</code></dd></div><div class="row"><dt class="k">Architecture</dt><dd class="v">x86_64</dd></div><div class="row"><dt class="k">Runtime</dt><dd class="v"><code>org.freedesktop.Platform//25.08</code>, <code>org.electronjs.Electron2.BaseApp//25.08</code></dd></div><div class="row"><dt class="k">Repository</dt><dd class="v"><code>https://jhuang6451.github.io/antigravity-flatpak/repo</code></dd></div><div class="row"><dt class="k">Signing key</dt><dd class="v">AGY Flatpak Repo<br><code>67EC 8F65 529D BB99 F120 757B B3AF C4AE F302 7676</code></dd></div></dl>
+    <p class="note">Use the .flatpakrepo and .flatpakref files from this site or from a release. They carry the public key. The copies in the git repository are templates without it.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container">
+    <p>Unofficial community package, not affiliated with or endorsed by Google. Antigravity is proprietary software and a trademark of Google LLC. The packaging files are released under the MIT License.</p>
+    <p><a href="https://github.com/jhuang6451/antigravity-flatpak">GitHub</a> · <a href="https://github.com/jhuang6451/antigravity-flatpak#readme">README</a> · <a href="https://github.com/jhuang6451/antigravity-flatpak/releases">Releases</a></p>
+  </div>
+</footer>
+<script src="app.js" defer></script>
 </body>
 </html>
