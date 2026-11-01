@@ -26,11 +26,11 @@ finish-args:
   - --socket=pulseaudio
   - --filesystem=xdg-run/pipewire-0
   # Hardware & Acceleration
-  - --device=all
+  - --device=dri
   # Development & Debugging
   - --allow=devel
   - --socket=ssh-auth
-  - --filesystem=host
+  - --filesystem=home
   # Desktop Integration & Notifications
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.freedesktop.secrets
