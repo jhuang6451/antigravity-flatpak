@@ -4,21 +4,19 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>LicenseRef-proprietary</project_license>
   <name>Antigravity</name>
-  <summary>Next-generation agentic desktop application and IDE by Google</summary>
+  <summary>Agentic IDE from Google</summary>
 
   <description>
     <p>
-      Antigravity is Google's advanced agentic coding environment and IDE.
-      It combines deep code intelligence, agentic pair-programming workflows,
-      and seamless developer toolchain integration.
+      Antigravity is an IDE from Google built around AI coding agents.
+      This is an unofficial Flatpak repackaging of the upstream Linux tarball.
     </p>
-    <p>Key features include:</p>
+    <p>Notable features:</p>
     <ul>
-      <li>Autonomous agentic workflows for software engineering tasks</li>
-      <li>Integrated Language Server protocol and code intelligence</li>
-      <li>Chrome DevTools MCP integration for web and UI debugging</li>
-      <li>Deep system and workspace integration with Wayland and X11 support</li>
-      <li>Automated updates and seamless Flatpak sandboxing</li>
+      <li>Agents that can plan and carry out software engineering tasks</li>
+      <li>Language server support for code navigation and completion</li>
+      <li>Chrome DevTools MCP integration for debugging web pages</li>
+      <li>Runs on Wayland and X11</li>
     </ul>
   </description>
 

@@ -1,14 +1,14 @@
 [Desktop Entry]
 Name=Antigravity
-GenericName=Agentic AI IDE
-Comment=Antigravity - Next Generation Agentic Desktop Application & IDE
+GenericName=IDE
+Comment=Google's agentic IDE
 Exec=antigravity %U
 Icon=com.google.Antigravity
 Type=Application
 StartupNotify=true
 StartupWMClass=Antigravity
-Categories=Development;IDE;TextEditor;
-MimeType=x-scheme-handler/antigravity;text/plain;inode/directory;
+Categories=Development;IDE;
+MimeType=x-scheme-handler/antigravity;
 Keywords=google;antigravity;ide;ai;agent;development;coding;
 Actions=NewWindow;
 

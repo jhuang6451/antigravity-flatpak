@@ -2,9 +2,10 @@
 Name=com.google.Antigravity
 Branch=stable
 Title=Antigravity
-Comment=Google Antigravity IDE - Agentic Desktop Application & IDE
+Comment=Google Antigravity IDE
 Icon=https://jhuang6451.github.io/antigravity-flatpak/icons/com.google.Antigravity.png
 Url=https://jhuang6451.github.io/antigravity-flatpak/repo
 IsRuntime=false
+RuntimeRepo=https://dl.flathub.org/repo/flathub.flatpakrepo
 SuggestRemoteName=antigravity
 gpg-verify=false

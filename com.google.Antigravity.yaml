@@ -52,9 +52,11 @@ modules:
       - mkdir -p /app/antigravity
       - cp -a antigravity/* /app/antigravity/
 
+      # chrome-sandbox (setuid helper) is not used under zypak
+      - rm -f /app/antigravity/chrome-sandbox
+
       # Ensure executable permissions on all binaries
       - chmod +x /app/antigravity/antigravity
-      - chmod +x /app/antigravity/chrome-sandbox
       - chmod +x /app/antigravity/chrome_crashpad_handler
       - chmod +x /app/antigravity/resources/bin/*
 
@@ -70,6 +72,8 @@ modules:
         if old in data:
             with open(path, "wb") as f:
                 f.write(data.replace(old, new, 1))
+        else:
+            print("WARNING: webm_encoder interpreter string not found; patch skipped")
         '
 
       # Install wrapper launcher script
