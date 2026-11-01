@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   check-update:
@@ -34,3 +35,10 @@ jobs:
           git add com.google.Antigravity.yaml com.google.Antigravity.metainfo.xml
           git commit -m "chore(release): bump Antigravity to ${{ steps.check.outputs.version }} (${{ steps.check.outputs.execution_id }})"
           git push origin master
+
+      - name: Trigger Build Workflow
+        if: steps.check.outputs.updated == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run build-and-deploy.yml --ref master
