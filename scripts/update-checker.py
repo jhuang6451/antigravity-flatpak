@@ -9,6 +9,7 @@ computes the SHA256 checksum for the new tarball, updates the Flatpak manifest
 
 import argparse
 import datetime
+import email.utils
 import hashlib
 import json
 import os
@@ -20,6 +21,11 @@ import xml.etree.ElementTree as ET
 API_URL = "https://antigravity-hub-auto-updater-974169037036.us-central1.run.app/releases"
 MANIFEST_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "com.google.Antigravity.yaml")
 METAINFO_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "com.google.Antigravity.metainfo.xml")
+
+
+def version_key(release):
+    """Sort key: numeric tuple of the version string."""
+    return tuple(int(p) for p in re.findall(r"\d+", release["version"]))
 
 
 def fetch_upstream_releases():
@@ -59,7 +65,11 @@ def parse_current_manifest():
 
 
 def compute_sha256(url):
-    """Download the artifact stream and compute its SHA256 checksum."""
+    """Download the artifact and return (sha256, release_date).
+
+    release_date comes from the Last-Modified header, or None if unavailable.
+    Upstream publishes no checksums, so the hash is trust-on-first-use.
+    """
     print(f"Downloading and calculating SHA256 for: {url}")
     req = urllib.request.Request(
         url,
@@ -67,9 +77,16 @@ def compute_sha256(url):
     )
     h = hashlib.sha256()
     total_bytes = 0
+    release_date = None
     with urllib.request.urlopen(req, timeout=120) as resp:
         if resp.status != 200:
             raise RuntimeError(f"Failed to download tarball: HTTP {resp.status}")
+        last_modified = resp.headers.get("Last-Modified")
+        if last_modified:
+            try:
+                release_date = email.utils.parsedate_to_datetime(last_modified).date().isoformat()
+            except (TypeError, ValueError):
+                release_date = None
         while True:
             chunk = resp.read(1024 * 1024)
             if not chunk:
@@ -79,7 +96,7 @@ def compute_sha256(url):
             print(f"\r  Downloaded {total_bytes / (1024 * 1024):.1f} MB...", end="", flush=True)
 
     print("\n  Download complete.")
-    return h.hexdigest()
+    return h.hexdigest(), release_date
 
 
 def update_manifest(old_content, new_url, new_sha):
@@ -157,7 +174,7 @@ def main():
             set_github_output({"updated": "false"})
         return 1
 
-    latest = releases[0]
+    latest = max(releases, key=version_key)
     latest_version = latest["version"]
     latest_exec_id = latest["execution_id"]
     print(f"Upstream latest release: version {latest_version} (execution_id: {latest_exec_id})")
@@ -196,11 +213,11 @@ def main():
             })
         return 0
 
-    new_sha256 = compute_sha256(new_url)
+    new_sha256, release_date = compute_sha256(new_url)
     print(f"Computed SHA256: {new_sha256}")
 
     update_manifest(curr["content"], new_url, new_sha256)
-    update_metainfo(latest_version)
+    update_metainfo(latest_version, release_date)
 
     if args.ci:
         set_github_output({

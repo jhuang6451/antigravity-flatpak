@@ -10,13 +10,19 @@ on:
       - 'com.google.Antigravity.desktop'
       - 'com.google.Antigravity.metainfo.xml'
       - 'icons/**'
+      - 'scripts/**'
+      - 'web/**'
+      - 'antigravity.flatpakref'
+      - 'antigravity.flatpakrepo'
       - '.github/workflows/build-and-deploy.yml'
   workflow_dispatch:
 
+concurrency:
+  group: build-and-deploy
+  cancel-in-progress: false
+
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read
 
 jobs:
   build:
@@ -29,26 +35,26 @@ jobs:
       app_version: ${{ steps.get_version.outputs.app_version }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Extract Application Version
         id: get_version
         run: |
           VERSION=$(grep -oP 'antigravity-hub/\K[0-9.]+(?=-)' com.google.Antigravity.yaml | head -n 1)
           if [ -z "$VERSION" ]; then
-            VERSION="2.24.0"
+            echo "::error::Could not extract the application version from com.google.Antigravity.yaml"
+            exit 1
           fi
           echo "app_version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "Building Antigravity version: ${VERSION}"
 
-      - name: Cache Flatpak Builder State
-        uses: actions/cache@v4
-        with:
-          path: |
-            .flatpak-builder
-          key: flatpak-builder-${{ runner.os }}-${{ hashFiles('com.google.Antigravity.yaml') }}
-          restore-keys: |
-            flatpak-builder-${{ runner.os }}-
+      - name: Install Runtime Dependencies
+        run: |
+          flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak install -y --noninteractive flathub \
+            org.freedesktop.Platform//25.08 \
+            org.freedesktop.Sdk//25.08 \
+            org.electronjs.Electron2.BaseApp//25.08
 
       - name: Build Flatpak Package & OSTree Repo
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -61,23 +67,33 @@ jobs:
           cache: true
           arch: x86_64
 
-      - name: Generate OSTree Static Deltas & Prune
+      # The repo is built from scratch on every run, so there is no history to
+      # diff against: skip static deltas and pruning. Clients still download
+      # only the objects that changed.
+      - name: Sign Repository (optional)
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
-          flatpak build-update-repo --generate-static-deltas --prune repo
+          scripts/sign-repo.sh repo com.google.Antigravity stable
+          if [ ! -f gpg-public.b64 ]; then
+            flatpak build-update-repo repo
+          fi
           tar -czf ostree-repo.tar.gz -C repo .
 
       - name: Upload Standalone Bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: antigravity-bundle
           path: com.google.Antigravity.flatpak
           if-no-files-found: error
 
       - name: Upload OSTree Repository Archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ostree-repo-archive
-          path: ostree-repo.tar.gz
+          path: |
+            ostree-repo.tar.gz
+            gpg-public.b64
           if-no-files-found: error
 
   deploy:
@@ -88,97 +104,95 @@ jobs:
       contents: write
       pages: write
       id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     env:
       APP_VERSION: ${{ needs.build.outputs.app_version }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download Standalone Bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: antigravity-bundle
 
       - name: Download OSTree Repository Archive
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ostree-repo-archive
 
-      - name: Prepare GitHub Pages Deployment Directory
+      - name: Prepare Deployment Directory
         run: |
           mkdir -p deploy/repo deploy/icons
-
-          # Extract OSTree repository
           tar -xzf ostree-repo.tar.gz -C deploy/repo/
-
-          # Copy Web UI
           cp -a web/* deploy/
+          cp icons/hicolor/512x512/apps/com.google.Antigravity.png deploy/icons/com.google.Antigravity.png
+          cp icons/hicolor/512x512/apps/com.google.Antigravity.png deploy/icons/512x512.png
 
-          # Copy application icons
-          cp -a icons/hicolor/512x512/apps/com.google.Antigravity.png deploy/icons/com.google.Antigravity.png
-          cp -a icons/hicolor/512x512/apps/com.google.Antigravity.png deploy/icons/512x512.png
+          # Work on copies so the files in git stay untouched
+          mkdir -p dist
+          cp antigravity.flatpakrepo antigravity.flatpakref dist/
 
-          # Copy flatpak repo and ref descriptors (both root and repo/ subpath)
-          cp antigravity.flatpakrepo deploy/antigravity.flatpakrepo
-          cp antigravity.flatpakrepo deploy/repo/antigravity.flatpakrepo
-          cp antigravity.flatpakref deploy/antigravity.flatpakref
-          cp antigravity.flatpakref deploy/repo/antigravity.flatpakref
+          # If the repo was signed, embed the public key and turn verification on
+          if [ -f gpg-public.b64 ]; then
+            KEY=$(cat gpg-public.b64)
+            for f in dist/antigravity.flatpakrepo dist/antigravity.flatpakref; do
+              sed -i '/^gpg-verify=/d' "$f"
+              echo "GPGKey=${KEY}" >> "$f"
+            done
+          fi
 
-          # Disable Jekyll on GitHub Pages (Critical: prevents 404 on special extensions and static files)
+          cp dist/antigravity.flatpakrepo dist/antigravity.flatpakref deploy/
+          cp dist/antigravity.flatpakrepo dist/antigravity.flatpakref deploy/repo/
           touch deploy/.nojekyll
 
-      - name: Deploy to GitHub Pages (gh-pages branch)
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./deploy
-          publish_branch: gh-pages
-          force_orphan: false
-          commit_message: "deploy: publish Flatpak repository for Antigravity v${{ env.APP_VERSION }}"
+          path: deploy
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
       - name: Create or Update GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: "v${{ env.APP_VERSION }}"
-          name: "Antigravity IDE v${{ env.APP_VERSION }}"
-          draft: false
-          prerelease: false
-          files: |
-            com.google.Antigravity.flatpak
-            antigravity.flatpakref
-            antigravity.flatpakrepo
-          body: |
-            ## Antigravity IDE v${{ env.APP_VERSION }}
+        run: |
+          TAG="v${APP_VERSION}"
+          cat > notes.md <<EOF
+          ## Antigravity IDE v${APP_VERSION}
 
-            Google Antigravity IDE packaged as an automated Flatpak.
+          Unofficial Flatpak build of Google Antigravity IDE.
 
-            ### 🚀 安装方式 (Installation)
+          ### Install from the repository (receives updates)
+          \`\`\`bash
+          flatpak remote-add --if-not-exists antigravity https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/antigravity.flatpakrepo
+          flatpak install antigravity com.google.Antigravity
+          flatpak run com.google.Antigravity
+          \`\`\`
 
-            #### 方式 1：添加仓库一键安装（推荐，支持全自动后台增量更新）
-            ```bash
-            # 1. 添加软件源
-            flatpak remote-add --if-not-exists antigravity https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/antigravity.flatpakrepo
+          ### Install from a .flatpakref
+          \`\`\`bash
+          flatpak install antigravity.flatpakref
+          \`\`\`
 
-            # 2. 安装 Antigravity
-            flatpak install -y antigravity com.google.Antigravity
+          ### Install the offline bundle
+          \`\`\`bash
+          flatpak install com.google.Antigravity.flatpak
+          \`\`\`
 
-            # 3. 运行
-            flatpak run com.google.Antigravity
-            ```
+          Built by GitHub Actions.
+          EOF
 
-            #### 方式 2：使用 `.flatpakref` 单文件图形化安装
-            下载本 Release 中的 `antigravity.flatpakref`，双击或运行：
-            ```bash
-            flatpak install antigravity.flatpakref
-            ```
-
-            #### 方式 3：离线单文件 Bundle 安装
-            下载 `com.google.Antigravity.flatpak`，随后执行：
-            ```bash
-            flatpak install com.google.Antigravity.flatpak
-            ```
-
-            ---
-            *自动化构建与发布由 GitHub Actions 驱动。*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Re-packaging the same upstream version must move the tag
+          gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "Antigravity IDE v${APP_VERSION}" \
+            --notes-file notes.md \
+            com.google.Antigravity.flatpak \
+            ostree-repo.tar.gz \
+            dist/antigravity.flatpakref \
+            dist/antigravity.flatpakrepo

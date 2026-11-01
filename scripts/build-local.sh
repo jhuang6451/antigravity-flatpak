@@ -26,13 +26,13 @@ fi
 
 echo "==> Using Flatpak Builder: ${BUILDER_CMD}"
 echo "==> Building Antigravity Flatpak package..."
-${BUILDER_CMD} --force-clean --repo="${REPO_DIR}" "${BUILD_DIR}" "${MANIFEST}"
+${BUILDER_CMD} --force-clean --default-branch=stable --repo="${REPO_DIR}" "${BUILD_DIR}" "${MANIFEST}"
 
-echo "==> Updating repository index & generating static deltas..."
-flatpak build-update-repo --generate-static-deltas "${REPO_DIR}"
+echo "==> Updating repository index..."
+flatpak build-update-repo "${REPO_DIR}"
 
 echo "==> Building standalone bundle..."
-flatpak build-bundle "${REPO_DIR}" com.google.Antigravity.flatpak com.google.Antigravity stable
+flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo "${REPO_DIR}" com.google.Antigravity.flatpak com.google.Antigravity stable
 
 echo "==> Done! You can install and test your local build with:"
 echo "    flatpak install --user --bundle com.google.Antigravity.flatpak"
