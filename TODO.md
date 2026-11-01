@@ -6,9 +6,9 @@
 
 ## 高
 
-- [~] **#1 自动更新后不触发构建**：已提交的 `check-update.yml` 没有触发 build-and-deploy 的步骤，`GITHUB_TOKEN` 推送又不会触发其他工作流。master 上已有 2.28.1、2.28.2，线上仍是 2.28.0。本地工作区里已有修复（`actions: write` + `gh workflow run`），尚未提交。→ 先 pull，再提交该修复，手动触发一次构建。
-- [~] **#2 OSTree 仓库提交进 git**：用 peaceiris 把整个 `deploy/`（含 `repo/objects`）推到 `gh-pages`，每次发布都让 git 历史变大，fetch 一次就是约 365MB，迟早碰到 Pages 1GB 上限。→ 移除 `peaceiris/actions-gh-pages`，改用 `upload-pages-artifact` + `deploy-pages`，Pages Source 切换为 GitHub Actions；之后可清理 `gh-pages` 分支。
-- [~] **#3 软件源未 GPG 签名**（`gpg-verify=false`）。→ 移植 `scripts/sign-repo.sh`，CI 用仓库 secret 签名，公钥内嵌到 `.flatpakrepo` / `.flatpakref`，`gpg-verify=true`。
+- [x] **#1 自动更新后不触发构建**：已提交的 `check-update.yml` 没有触发 build-and-deploy 的步骤，`GITHUB_TOKEN` 推送又不会触发其他工作流。master 上已有 2.28.1、2.28.2，线上仍是 2.28.0。本地工作区里已有修复（`actions: write` + `gh workflow run`），尚未提交。→ 先 pull，再提交该修复，手动触发一次构建。
+- [x] **#2 OSTree 仓库提交进 git**：用 peaceiris 把整个 `deploy/`（含 `repo/objects`）推到 `gh-pages`，每次发布都让 git 历史变大，fetch 一次就是约 365MB，迟早碰到 Pages 1GB 上限。→ 移除 `peaceiris/actions-gh-pages`，改用 `upload-pages-artifact` + `deploy-pages`，Pages Source 切换为 GitHub Actions；之后可清理 `gh-pages` 分支。
+- [x] **#3 软件源未 GPG 签名**（`gpg-verify=false`）。→ 移植 `scripts/sign-repo.sh`，CI 用仓库 secret 签名，公钥内嵌到 `.flatpakrepo` / `.flatpakref`，`gpg-verify=true`。
 - [x] **#4 `antigravity.flatpakref` 缺少 `RuntimeRepo=`**：未配置 flathub 的用户无法解析 `org.freedesktop.Platform//25.08`。
 
 ## 中
