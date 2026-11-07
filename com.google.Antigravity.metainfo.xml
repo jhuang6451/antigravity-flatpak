@@ -42,6 +42,11 @@
   </provides>
 
   <releases>
+    <release version="2.29.1" date="2026-11-07">
+      <description>
+        <p>Upstream Antigravity IDE version 2.29.1.</p>
+      </description>
+    </release>
     <release version="2.29.0" date="2026-11-03">
       <description>
         <p>Upstream Antigravity IDE version 2.29.0.</p>
