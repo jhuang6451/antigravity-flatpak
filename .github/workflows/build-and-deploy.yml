@@ -102,6 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
       pages: write
       id-token: write
     environment:
@@ -149,14 +150,42 @@ jobs:
           cp dist/antigravity.flatpakrepo dist/antigravity.flatpakref deploy/repo/
           touch deploy/.nojekyll
 
+      # A re-run keeps artifacts from earlier attempts, and deploy-pages refuses
+      # to deploy when more than one "github-pages" artifact exists.
+      - name: Remove Stale Pages Artifacts
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts" \
+            -q '.artifacts[] | select(.name=="github-pages") | .id' |
+          while read -r id; do
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}"
+            echo "Deleted stale github-pages artifact ${id}"
+          done
+
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: deploy
 
+      # The artifact list API is eventually consistent: right after the upload
+      # finalizes, deploy-pages can fail with 'No artifacts named "github-pages"'.
+      # Retry once after a short wait instead of failing the whole run.
       - name: Deploy to GitHub Pages
-        id: deployment
+        id: deployment_first
+        continue-on-error: true
         uses: actions/deploy-pages@v4
+
+      - name: Wait before retrying Pages deployment
+        if: steps.deployment_first.outcome == 'failure'
+        run: sleep 30
+
+      - name: Deploy to GitHub Pages (retry)
+        id: deployment_retry
+        if: steps.deployment_first.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+
+      - name: Resolve Pages URL
+        id: deployment
+        run: echo "page_url=${{ steps.deployment_first.outputs.page_url || steps.deployment_retry.outputs.page_url }}" >> "$GITHUB_OUTPUT"
 
       - name: Create or Update GitHub Release
         run: |
