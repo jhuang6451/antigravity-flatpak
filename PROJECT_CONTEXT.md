@@ -70,7 +70,7 @@ Each run starts with an empty repo, so there is no earlier commit to diff agains
 
 ### Signing
 
-`scripts/sign-repo.sh` imports `GPG_PRIVATE_KEY` into a temporary keyring, signs the commit with `flatpak build-sign`, regenerates the summary with `flatpak build-update-repo --gpg-sign`, and writes the base64 public key to `gpg-public.b64`. If the secret is missing, it exits without signing and the deploy leaves `gpg-verify=false` in place.
+`scripts/sign-repo.sh` imports `GPG_PRIVATE_KEY` into a temporary keyring, signs the app commit with `flatpak build-sign` and any remaining unsigned refs (such as `appstream/*` and `appstream2/*`) with `ostree gpg-sign`, regenerates the summary with `flatpak build-update-repo --gpg-sign`, verifies every ref has a detached GPG signature, and writes the base64 public key to `gpg-public.b64`. If the secret is missing, it exits without signing and the deploy leaves `gpg-verify=false` in place.
 
 - Secret: `GPG_PRIVATE_KEY` (armored private key, no passphrase).
 - Key: `67EC 8F65 529D BB99 F120 757B B3AF C4AE F302 7676`. The public key is in `pubkey.b64`.
