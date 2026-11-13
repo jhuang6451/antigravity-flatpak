@@ -102,6 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
       pages: write
       id-token: write
     environment:
@@ -148,6 +149,17 @@ jobs:
           cp dist/antigravity.flatpakrepo dist/antigravity.flatpakref deploy/
           cp dist/antigravity.flatpakrepo dist/antigravity.flatpakref deploy/repo/
           touch deploy/.nojekyll
+
+      # A re-run keeps artifacts from earlier attempts, and deploy-pages refuses
+      # to deploy when more than one "github-pages" artifact exists.
+      - name: Remove Stale Pages Artifacts
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts" \
+            -q '.artifacts[] | select(.name=="github-pages") | .id' |
+          while read -r id; do
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}"
+            echo "Deleted stale github-pages artifact ${id}"
+          done
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v4
